@@ -2,7 +2,7 @@ const { readFileSync, existsSync, writeFileSync, readdirSync, statSync, mkdirSyn
 const { createHash } = require("crypto");
 const path = require("path");
 const { uploadAsset } = require("./upload");
-const { generateTs } = require("./codegen");
+const { generateLuau, generateDts } = require("./codegen");
 
 /**
  * 拡張子 → Roblox assetType マッピング
@@ -91,7 +91,7 @@ async function syncOne(syncConfig, creator, apiKey, cwd) {
 			continue;
 		}
 
-		const key = relPath.replace(/\\/g, "/").replace(/\.[^.]+$/, "");
+		const key = relPath.replace(/\\/g, "/");
 		const hash = fileHash(filePath);
 
 		if (lock[key]?.hash === hash) {
@@ -110,18 +110,30 @@ async function syncOne(syncConfig, creator, apiKey, cwd) {
 		writeFileSync(lockPath, JSON.stringify(lock, null, 2) + "\n");
 	}
 
-	// コード生成
+	// コード生成 (.luau + .d.ts ペア — roblox-ts 互換)
 	if (syncConfig.output && Object.keys(lock).length > 0) {
 		const outputPath = path.resolve(cwd, syncConfig.output);
 		const outputDir = path.dirname(outputPath);
 		if (!existsSync(outputDir)) mkdirSync(outputDir, { recursive: true });
 
-		const varName = syncConfig.name.replace(/[^a-zA-Z0-9]/g, "_") + "Assets";
-		const content = generateTs(lock, varName);
-		const existing = existsSync(outputPath) ? readFileSync(outputPath, "utf8") : "";
-		if (content !== existing) {
-			writeFileSync(outputPath, content);
-			console.log(`[${syncConfig.name}] generated: ${syncConfig.output}`);
+		// output から拡張子を除去してベースパスを得る
+		const basePath = outputPath.replace(/\.(d\.ts|ts|luau)$/, "");
+		const luauPath = basePath + ".luau";
+		const dtsPath = basePath + ".d.ts";
+
+		const varName = syncConfig.name.replace(/[^a-zA-Z0-9]/g, "_");
+
+		const luauContent = generateLuau(lock, varName);
+		const dtsContent = generateDts(lock, varName);
+
+		const existingLuau = existsSync(luauPath) ? readFileSync(luauPath, "utf8") : "";
+		const existingDts = existsSync(dtsPath) ? readFileSync(dtsPath, "utf8") : "";
+
+		if (luauContent !== existingLuau) writeFileSync(luauPath, luauContent);
+		if (dtsContent !== existingDts) writeFileSync(dtsPath, dtsContent);
+
+		if (luauContent !== existingLuau || dtsContent !== existingDts) {
+			console.log(`[${syncConfig.name}] generated: ${path.relative(cwd, luauPath)} + ${path.relative(cwd, dtsPath)}`);
 		}
 	}
 }

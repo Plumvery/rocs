@@ -8,35 +8,36 @@ id = 123456789      # Your Roblox User ID or Group ID
 # Each [[sync]] section defines an asset group to sync.
 # Assets are uploaded via Roblox Open Cloud API.
 # The asset type is auto-detected from file extensions.
+# output generates a .luau + .d.ts pair (e.g. "src/shared/images" → images.luau + images.d.ts)
 
 [[sync]]
 name = "images"
 path = "assets/images"
-output = "src/shared/image-assets.ts"
+output = "src/shared/images"
 
 [[sync]]
 name = "sounds"
 path = "assets/sounds"
-output = "src/shared/sound-assets.ts"
+output = "src/shared/sounds"
 
 [[sync]]
 name = "meshes"
 path = "assets/meshes"
-output = "src/shared/mesh-assets.ts"
+output = "src/shared/meshes"
 
 [[sync]]
 name = "animations"
 path = "assets/animations"
-output = "src/shared/animation-assets.ts"
+output = "src/shared/animations"
 
 [[sync]]
 name = "videos"
 path = "assets/videos"
-output = "src/shared/video-assets.ts"
+output = "src/shared/videos"
 
 # You can also force a specific asset type for a group:
 # [[sync]]
 # name = "custom-anims"
 # path = "assets/fbx-animations"
-# output = "src/shared/custom-anim-assets.ts"
+# output = "src/shared/custom-anims"
 # assetType = "Animation"
