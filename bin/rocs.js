@@ -30,7 +30,7 @@ async function main() {
 
 	loadEnv();
 
-	const apiKey = process.env.ROCS_API_KEY || process.env.ASPHALT_API_KEY;
+	const apiKey = process.env.ROCS_API_KEY;
 	if (!apiKey) {
 		console.error("API key not found. Set ROCS_API_KEY in .env or environment.");
 		process.exit(1);
