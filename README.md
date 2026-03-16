@@ -75,8 +75,7 @@ output = "src/shared/image-assets.ts"  # Generated TypeScript file
 
 ### Environment Variables
 
-- `ROCS_API_KEY` — Roblox Open Cloud API key (preferred)
-- `ASPHALT_API_KEY` — Also accepted for compatibility
+- `ROCS_API_KEY` — Roblox Open Cloud API key
 
 Set in `.env` or export in your shell.
 
