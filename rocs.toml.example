@@ -1,0 +1,42 @@
+# rocs - Roblox Open Cloud Asset Sync
+# Copy this file to rocs.toml and edit to match your project.
+
+[creator]
+type = "user"       # "user" or "group"
+id = 123456789      # Your Roblox User ID or Group ID
+
+# Each [[sync]] section defines an asset group to sync.
+# Assets are uploaded via Roblox Open Cloud API.
+# The asset type is auto-detected from file extensions.
+
+[[sync]]
+name = "images"
+path = "assets/images"
+output = "src/shared/image-assets.ts"
+
+[[sync]]
+name = "sounds"
+path = "assets/sounds"
+output = "src/shared/sound-assets.ts"
+
+[[sync]]
+name = "meshes"
+path = "assets/meshes"
+output = "src/shared/mesh-assets.ts"
+
+[[sync]]
+name = "animations"
+path = "assets/animations"
+output = "src/shared/animation-assets.ts"
+
+[[sync]]
+name = "videos"
+path = "assets/videos"
+output = "src/shared/video-assets.ts"
+
+# You can also force a specific asset type for a group:
+# [[sync]]
+# name = "custom-anims"
+# path = "assets/fbx-animations"
+# output = "src/shared/custom-anim-assets.ts"
+# assetType = "Animation"

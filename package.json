@@ -1,0 +1,23 @@
+{
+  "name": "roblox-open-cloud-sync",
+  "version": "0.1.0",
+  "description": "Sync assets (images, sounds, meshes, animations, videos) to Roblox via Open Cloud API",
+  "main": "src/index.js",
+  "bin": {
+    "rocs": "bin/rocs.js"
+  },
+  "scripts": {
+    "test": "node test/test.js"
+  },
+  "keywords": ["roblox", "open-cloud", "assets", "sync", "roblox-ts"],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "src/",
+    "bin/",
+    "README.md",
+    "LICENSE"
+  ]
+}
