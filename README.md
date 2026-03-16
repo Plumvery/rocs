@@ -9,7 +9,7 @@ Sync images, sounds, meshes, animations, and videos to Roblox via the [Open Clou
 - **Recursive directory scanning** — nested folder structures become nested TypeScript objects
 - **roblox-ts compatible** — generates `.luau` + `.d.ts` pairs (same format as Asphalt)
 - **Zero dependencies** — pure Node.js (>=18), no external packages
-- **CLI + library** — use `npx rocs sync` or `require("roblox-open-cloud-sync")` programmatically
+- **CLI + library** — use `rocs sync` or `require("roblox-open-cloud-sync")` programmatically
 
 ## Supported Formats
 
@@ -24,10 +24,12 @@ Sync images, sounds, meshes, animations, and videos to Roblox via the [Open Clou
 ## Quick Start
 
 ```bash
-npm install -D roblox-open-cloud-sync
+git clone https://github.com/Plumvery/rocs.git
+cd rocs
+npm install -g .
 ```
 
-Create `rocs.toml`:
+Create `rocs.toml` in your project root:
 
 ```toml
 [creator]
@@ -54,7 +56,7 @@ ROCS_API_KEY="your-open-cloud-api-key"
 Run:
 
 ```bash
-npx rocs sync
+rocs sync
 ```
 
 ## Configuration
