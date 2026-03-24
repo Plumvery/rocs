@@ -47,7 +47,7 @@ function walkDir(dir, base = dir) {
 	const results = [];
 	if (!existsSync(dir)) return results;
 	for (const entry of readdirSync(dir)) {
-		if (entry.startsWith(".")) continue;
+		if (entry.startsWith(".") || entry.endsWith(".lock.json")) continue;
 		const fullPath = path.join(dir, entry);
 		if (statSync(fullPath).isDirectory()) {
 			results.push(...walkDir(fullPath, base));
@@ -75,7 +75,7 @@ async function syncOne(syncConfig, creator, apiKey, cwd) {
 		return;
 	}
 
-	const lockPath = path.resolve(cwd, `${syncConfig.name}.lock.json`);
+	const lockPath = path.join(assetDir, `${syncConfig.name}.lock.json`);
 	const lock = existsSync(lockPath) ? JSON.parse(readFileSync(lockPath, "utf8")) : {};
 
 	const files = walkDir(assetDir);
