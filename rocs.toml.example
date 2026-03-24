@@ -35,6 +35,20 @@ name = "videos"
 path = "assets/videos"
 output = "src/shared/videos"
 
+# --- Options ---
+# format: "roblox-ts" (default) generates .luau + .d.ts pair
+#         "luau" generates .luau only with --!strict and type annotations
+# stripExtensions: true removes file extensions from keys
+#   e.g. images.ui.button instead of images.ui["button.png"]
+
+# Example: pure Luau project
+# [[sync]]
+# name = "images"
+# path = "assets/images"
+# output = "src/shared/images"
+# format = "luau"
+# stripExtensions = true
+
 # You can also force a specific asset type for a group:
 # [[sync]]
 # name = "custom-anims"

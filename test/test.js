@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { parseConfig } = require("../src/config");
-const { generateLuau, generateDts, buildTree } = require("../src/codegen");
+const { generateLuau, generateDts, buildTree, renderLuauType } = require("../src/codegen");
 const { EXT_TO_ASSET_TYPE } = require("../src/sync");
 
 // --- Config parsing ---
@@ -105,6 +105,68 @@ const flatDts = generateDts(flatLock, "animations");
 assert(flatDts.includes('"walk.rbxm": string'));
 assert(flatDts.includes('"run.rbxm": string'));
 console.log("  flat keys OK");
+
+// --- stripExtensions ---
+console.log("Testing stripExtensions...");
+
+const treeStripped = buildTree(lock, { stripExtensions: true });
+assert.strictEqual(treeStripped.ui.button, "rbxassetid://111");
+assert.strictEqual(treeStripped.ui.icon, "rbxassetid://222");
+assert.strictEqual(treeStripped.fx.spark, "rbxassetid://333");
+assert.strictEqual(treeStripped.logo, "rbxassetid://444");
+console.log("  stripExtensions OK");
+
+// --- Luau strict mode generation ---
+console.log("Testing Luau strict mode generation...");
+
+const luauStrict = generateLuau(lock, "images", { strict: true, stripExtensions: true });
+assert(luauStrict.includes("--!strict"));
+assert(luauStrict.includes("type ImagesType = {"));
+assert(luauStrict.includes("local images: ImagesType = {"));
+assert(luauStrict.includes("return images"));
+assert(luauStrict.includes("\tbutton: string,"));
+assert(luauStrict.includes('\tbutton = "rbxassetid://111"'));
+assert(!luauStrict.includes(".png"));
+console.log("  Luau strict mode OK");
+
+// --- Luau generation with stripExtensions (non-strict) ---
+console.log("Testing Luau generation with stripExtensions...");
+
+const luauStripOnly = generateLuau(lock, "images", { stripExtensions: true });
+assert(!luauStripOnly.includes("--!strict"));
+assert(luauStripOnly.includes('button = "rbxassetid://111"'));
+assert(!luauStripOnly.includes(".png"));
+console.log("  Luau stripExtensions (non-strict) OK");
+
+// --- d.ts generation with stripExtensions ---
+console.log("Testing d.ts generation with stripExtensions...");
+
+const dtsStripped = generateDts(lock, "images", { stripExtensions: true });
+assert(dtsStripped.includes("button: string"));
+assert(dtsStripped.includes("spark: string"));
+assert(!dtsStripped.includes(".png"));
+console.log("  d.ts stripExtensions OK");
+
+// --- Config with format and stripExtensions ---
+console.log("Testing config with format and stripExtensions...");
+
+const toml3 = `
+[creator]
+type = "user"
+id = 12345
+
+[[sync]]
+name = "images"
+path = "assets/images"
+output = "src/shared/images"
+format = "luau"
+stripExtensions = true
+`;
+
+const config3 = parseConfig(toml3);
+assert.strictEqual(config3.sync[0].format, "luau");
+assert.strictEqual(config3.sync[0].stripExtensions, true);
+console.log("  config format/stripExtensions OK");
 
 // --- Extension mapping ---
 console.log("Testing extension mapping...");

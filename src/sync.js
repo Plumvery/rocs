@@ -110,8 +110,11 @@ async function syncOne(syncConfig, creator, apiKey, cwd) {
 		writeFileSync(lockPath, JSON.stringify(lock, null, 2) + "\n");
 	}
 
-	// コード生成 (.luau + .d.ts ペア — roblox-ts 互換)
+	// コード生成
+	// format: "luau" = .luau のみ (--!strict + 型注釈), "roblox-ts" = .luau + .d.ts (デフォルト)
 	if (syncConfig.output && Object.keys(lock).length > 0) {
+		const format = syncConfig.format || "roblox-ts";
+		const stripExtensions = syncConfig.stripExtensions || false;
 		const outputPath = path.resolve(cwd, syncConfig.output);
 		const outputDir = path.dirname(outputPath);
 		if (!existsSync(outputDir)) mkdirSync(outputDir, { recursive: true });
@@ -119,21 +122,28 @@ async function syncOne(syncConfig, creator, apiKey, cwd) {
 		// output から拡張子を除去してベースパスを得る
 		const basePath = outputPath.replace(/\.(d\.ts|ts|luau)$/, "");
 		const luauPath = basePath + ".luau";
-		const dtsPath = basePath + ".d.ts";
-
 		const varName = syncConfig.name.replace(/[^a-zA-Z0-9]/g, "_");
 
-		const luauContent = generateLuau(lock, varName);
-		const dtsContent = generateDts(lock, varName);
-
+		const luauContent = generateLuau(lock, varName, {
+			strict: format === "luau",
+			stripExtensions,
+		});
 		const existingLuau = existsSync(luauPath) ? readFileSync(luauPath, "utf8") : "";
-		const existingDts = existsSync(dtsPath) ? readFileSync(dtsPath, "utf8") : "";
-
 		if (luauContent !== existingLuau) writeFileSync(luauPath, luauContent);
-		if (dtsContent !== existingDts) writeFileSync(dtsPath, dtsContent);
 
-		if (luauContent !== existingLuau || dtsContent !== existingDts) {
-			console.log(`[${syncConfig.name}] generated: ${path.relative(cwd, luauPath)} + ${path.relative(cwd, dtsPath)}`);
+		if (format === "roblox-ts") {
+			const dtsPath = basePath + ".d.ts";
+			const dtsContent = generateDts(lock, varName, { stripExtensions });
+			const existingDts = existsSync(dtsPath) ? readFileSync(dtsPath, "utf8") : "";
+			if (dtsContent !== existingDts) writeFileSync(dtsPath, dtsContent);
+
+			if (luauContent !== existingLuau || dtsContent !== existingDts) {
+				console.log(`[${syncConfig.name}] generated: ${path.relative(cwd, luauPath)} + ${path.relative(cwd, dtsPath)}`);
+			}
+		} else {
+			if (luauContent !== existingLuau) {
+				console.log(`[${syncConfig.name}] generated: ${path.relative(cwd, luauPath)}`);
+			}
 		}
 	}
 }
