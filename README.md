@@ -22,13 +22,19 @@ Sync images, sounds, meshes, animations, and videos to Roblox via the [Open Clou
 | Animation | `.rbxm` `.rbxmx` | Animation |
 | Video | `.mp4` `.mov` | Video |
 
-## Quick Start
+## インストール
 
 ```bash
-git clone https://github.com/Plumvery/rocs.git
-cd rocs
-npm install -g .
+npm install -g github:Plumvery/rocs
 ```
+
+プロジェクトの devDependencies に追加する場合:
+
+```bash
+npm install --save-dev github:Plumvery/rocs
+```
+
+## Quick Start
 
 Create `rocs.toml` in your project root:
 
@@ -57,7 +63,9 @@ ROCS_API_KEY="your-open-cloud-api-key"
 Run:
 
 ```bash
-rocs sync
+rocs sync          # 1回同期
+rocs watch         # ファイル変更を監視して自動同期
+rocs watch --debounce 5000  # デバウンス間隔を変更 (デフォルト: 10000ms)
 ```
 
 ## Configuration
